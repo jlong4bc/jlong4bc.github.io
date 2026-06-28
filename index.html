@@ -1,173 +1,817 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>J Long — Stoolaskii Icon</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Radon Risk in U.S. Buildings | Interactive Guide</title>
+  <meta
+    name="description"
+    content="Interactive guide to U.S. radon risks, health impacts, and mitigation techniques for homes and commercial buildings."
+  />
   <style>
     :root {
-      color-scheme: light;
-      --bg: #f5f9ff;
-      --ink: #16213d;
-      --accent: #1d7ef2;
+      --bg: #f4f8ff;
       --panel: #ffffff;
-      --shadow: 0 10px 24px rgba(22, 33, 61, 0.12);
+      --ink: #14233f;
+      --muted: #4d6388;
+      --accent: #2563eb;
+      --accent-2: #0ea5e9;
+      --warn: #f59e0b;
+      --danger: #dc2626;
+      --ok: #16a34a;
+      --shadow: 0 16px 40px rgba(20, 35, 63, 0.12);
+      --radius: 16px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
+    html,
     body {
       margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(180deg, #e9f4ff 0%, var(--bg) 100%);
+      padding: 0;
+      font-family: Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       color: var(--ink);
+      background: radial-gradient(circle at top right, #dcecff 0%, var(--bg) 45%, #eef5ff 100%);
+      scroll-behavior: smooth;
     }
 
-    main {
-      max-width: 980px;
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      width: min(1100px, 92vw);
       margin: 0 auto;
-      padding: 2rem 1rem 3rem;
     }
 
-    .hero,
-    .events {
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(244, 248, 255, 0.88);
+      border-bottom: 1px solid rgba(20, 35, 63, 0.08);
+    }
+
+    .top-nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.95rem;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 26px;
+      align-items: center;
+      padding: clamp(28px, 7vw, 70px) 0 26px;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 4.2vw, 3.1rem);
+    }
+
+    .hero p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      line-height: 1.6;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 0;
+    }
+
+    .badge {
+      background: #e5efff;
+      color: #1e3a8a;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .card {
       background: var(--panel);
-      border-radius: 16px;
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
+      border: 1px solid rgba(20, 35, 63, 0.08);
     }
 
-    h1 {
-      margin-top: 0;
-      font-size: clamp(1.9rem, 4vw, 2.6rem);
-      color: #0e4da8;
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 10px 0 36px;
     }
 
-    .lede {
-      font-size: 1.08rem;
-      line-height: 1.55;
-      margin-bottom: 1rem;
+    .stat {
+      padding: 18px;
     }
 
-    .art {
+    .stat strong {
+      display: block;
+      font-size: 1.45rem;
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    section {
+      margin: 0 0 34px;
+    }
+
+    section h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.35rem, 2.3vw, 2rem);
+    }
+
+    .section-lead {
+      color: var(--muted);
+      max-width: 72ch;
+      margin: 0 0 16px;
+      line-height: 1.6;
+    }
+
+    .sim-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 16px;
+    }
+
+    .sim-panel,
+    .controls-panel {
+      padding: 16px;
+    }
+
+    #radon-canvas {
       width: 100%;
+      height: 360px;
+      display: block;
       border-radius: 12px;
-      border: 3px solid #dbeafe;
-      background: #e0f2ff;
-      overflow: hidden;
+      background: linear-gradient(#dbeafe 0 44%, #f8fafc 44% 66%, #a16207 66% 100%);
+      border: 1px solid rgba(20, 35, 63, 0.12);
+    }
+
+    .legend {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .dot-radon {
+      background: #1d4ed8;
+    }
+
+    .dot-daughter {
+      background: #9333ea;
+    }
+
+    .dot-alpha {
+      background: #f59e0b;
+    }
+
+    .control {
+      margin-bottom: 14px;
+    }
+
+    .control label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    input[type='range'] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .risk-box {
+      padding: 12px;
+      border-radius: 12px;
+      background: #eef4ff;
+      border: 1px solid rgba(37, 99, 235, 0.18);
+    }
+
+    .risk-box h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .risk-level {
+      font-weight: 700;
+    }
+
+    .risk-low {
+      color: var(--ok);
+    }
+
+    .risk-moderate {
+      color: var(--warn);
+    }
+
+    .risk-high {
+      color: var(--danger);
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .mitigation-card {
+      padding: 16px;
+    }
+
+    .mitigation-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+
+    .mitigation-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      background: var(--panel);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(20, 35, 63, 0.08);
     }
 
-    th, td {
+    th,
+    td {
+      padding: 12px;
       text-align: left;
-      padding: 0.7rem;
-      border-bottom: 1px solid #d9e2f0;
+      border-bottom: 1px solid rgba(20, 35, 63, 0.08);
+      font-size: 0.95rem;
       vertical-align: top;
     }
 
-    th { color: #0e4da8; }
+    th {
+      background: #e8f0ff;
+    }
 
-    footer {
-      text-align: center;
-      color: #46608c;
-      font-size: 0.9rem;
-      margin-top: 0.75rem;
+    .footer {
+      margin: 28px 0 46px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 12px;
+      padding: 11px 14px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(29, 78, 216, 0.35);
+    }
+
+    .cta:hover {
+      text-decoration: none;
+      filter: brightness(1.05);
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .sim-grid,
+      .columns {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <main>
-    <section class="hero">
-      <h1>J Long: One of the Most Well-Known Athletes in Stoolaskii</h1>
-      <p class="lede">
-        J Long is celebrated worldwide for unforgettable runs in <strong>stoolaskii</strong>:
-        a wild downhill sport where the rider sits on a barstool whose legs are buckled to skis,
-        then carves through snow while wearing an unbuckled helmet. Equal parts daring and
-        cartoon chaos, J Long helped make stoolaskii famous.
+  <nav class="top-nav" aria-label="Primary">
+    <div class="container">
+      <div class="brand">Radon Risk Explorer</div>
+      <div class="nav-links">
+        <a href="#overview">Overview</a>
+        <a href="#simulation">How It Works</a>
+        <a href="#weather">Weather & Seasons</a>
+        <a href="#mitigation">Mitigation</a>
+        <a href="#epa">EPA Resources</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero" id="overview">
+      <div>
+        <h1>Understand Radon Risk in U.S. Homes and Workplaces</h1>
+        <p>
+          Radon is a naturally occurring radioactive gas that can enter buildings through cracks and openings in
+          foundations. It has no smell or color, so testing is the only way to know your level. Long-term exposure is
+          linked to lung cancer risk.
+        </p>
+        <a class="cta" href="https://www.epa.gov/radon" target="_blank" rel="noopener noreferrer">Visit EPA Radon Page</a>
+        <div class="badge-row" aria-label="Key facts">
+          <span class="badge">EPA action level: 4.0 pCi/L</span>
+          <span class="badge">Lower levels can still carry risk</span>
+          <span class="badge">Testing is the first step</span>
+        </div>
+      </div>
+      <div class="card" style="padding: 16px;">
+        <h2 style="margin-top: 0;">At a glance (U.S.)</h2>
+        <p class="section-lead" style="margin-bottom: 0;">
+          EPA identifies radon as the second leading cause of lung cancer overall and the leading cause among people
+          who do not smoke.
+        </p>
+      </div>
+    </section>
+
+    <div class="stats" aria-label="Key U.S. radon metrics">
+      <article class="card stat">
+        <strong>~1 in 15</strong>
+        <span>U.S. homes are estimated to have radon at or above the EPA action level.</span>
+      </article>
+      <article class="card stat">
+        <strong>4.0 pCi/L</strong>
+        <span>EPA recommends taking action to reduce indoor radon at or above this level.</span>
+      </article>
+      <article class="card stat">
+        <strong>~21,000</strong>
+        <span>Estimated U.S. lung cancer deaths per year associated with radon exposure (EPA).</span>
+      </article>
+    </div>
+
+    <section id="simulation">
+      <h2>How Radon Enters and Breaks Down</h2>
+      <p class="section-lead">
+        Use the controls to simulate how soil gas infiltration can increase indoor radon concentration. Blue particles
+        represent radon, purple particles represent short-lived decay products, and amber bursts represent emitted
+        alpha radiation events.
       </p>
 
-      <figure class="art">
-        <svg viewBox="0 0 1200 520" role="img" aria-labelledby="artTitle artDesc">
-          <title id="artTitle">Cartoon illustration of stoolaskii</title>
-          <desc id="artDesc">An athlete seated on a barstool attached to skis while skiing downhill with a loose helmet.</desc>
-          <rect width="1200" height="520" fill="#b8e7ff"></rect>
-          <polygon points="0,520 1200,280 1200,520" fill="#f7fcff"></polygon>
-          <circle cx="1040" cy="90" r="45" fill="#fff4b3"></circle>
-          <ellipse cx="550" cy="335" rx="300" ry="28" fill="#d8efff"></ellipse>
+      <div class="sim-grid">
+        <article class="card sim-panel">
+          <canvas id="radon-canvas" width="760" height="360" role="img" aria-labelledby="sim-title sim-desc"></canvas>
+          <div id="sim-title" hidden>Radon seepage and decay visualization</div>
+          <div id="sim-desc" hidden>
+            Animated scene showing a building over soil with particles moving upward into indoor space and decaying.
+          </div>
+          <div class="legend">
+            <span><i class="dot dot-radon"></i>Radon gas</span>
+            <span><i class="dot dot-daughter"></i>Decay products</span>
+            <span><i class="dot dot-alpha"></i>Alpha emission</span>
+          </div>
+        </article>
 
-          <line x1="400" y1="335" x2="760" y2="275" stroke="#4f5d75" stroke-width="12" stroke-linecap="round"></line>
-          <line x1="430" y1="372" x2="790" y2="312" stroke="#4f5d75" stroke-width="12" stroke-linecap="round"></line>
+        <aside class="card controls-panel">
+          <div class="control">
+            <label for="soil-rate">Soil Entry Rate <span id="soil-rate-value">55</span></label>
+            <input id="soil-rate" type="range" min="10" max="100" step="1" value="55" />
+          </div>
 
-          <rect x="560" y="210" width="100" height="24" rx="8" fill="#8b5e3c"></rect>
-          <line x1="580" y1="234" x2="560" y2="307" stroke="#8b5e3c" stroke-width="10"></line>
-          <line x1="645" y1="234" x2="625" y2="307" stroke="#8b5e3c" stroke-width="10"></line>
-          <line x1="615" y1="234" x2="595" y2="307" stroke="#8b5e3c" stroke-width="10"></line>
-          <line x1="665" y1="234" x2="645" y2="307" stroke="#8b5e3c" stroke-width="10"></line>
+          <div class="control">
+            <label for="ventilation">Ventilation Efficiency <span id="vent-value">35%</span></label>
+            <input id="ventilation" type="range" min="0" max="90" step="1" value="35" />
+          </div>
 
-          <circle cx="615" cy="165" r="32" fill="#ffd8b1"></circle>
-          <ellipse cx="615" cy="130" rx="40" ry="20" fill="#ffd45f"></ellipse>
-          <line x1="655" y1="145" x2="688" y2="165" stroke="#ffd45f" stroke-width="8"></line>
-          <circle cx="604" cy="162" r="4" fill="#1e1e1e"></circle>
-          <circle cx="626" cy="162" r="4" fill="#1e1e1e"></circle>
-          <path d="M602 177 Q615 187 628 177" fill="none" stroke="#1e1e1e" stroke-width="3"></path>
+          <div class="control">
+            <label for="measured-radon">Measured Radon (pCi/L) <span id="radon-value">3.8</span></label>
+            <input id="measured-radon" type="range" min="0.5" max="20" step="0.1" value="3.8" />
+          </div>
 
-          <path d="M595 198 L640 198 L662 252 L570 252 Z" fill="#1d7ef2"></path>
-          <line x1="595" y1="216" x2="550" y2="240" stroke="#1d7ef2" stroke-width="14" stroke-linecap="round"></line>
-          <line x1="650" y1="217" x2="700" y2="205" stroke="#1d7ef2" stroke-width="14" stroke-linecap="round"></line>
-          <line x1="585" y1="252" x2="552" y2="305" stroke="#304a6e" stroke-width="14" stroke-linecap="round"></line>
-          <line x1="642" y1="252" x2="622" y2="305" stroke="#304a6e" stroke-width="14" stroke-linecap="round"></line>
+          <div class="control">
+            <label for="occupancy">Hours Indoors / Day <span id="occupancy-value">16</span></label>
+            <input id="occupancy" type="range" min="2" max="24" step="1" value="16" />
+          </div>
 
-          <text x="40" y="90" font-size="42" font-family="Segoe UI, Tahoma, sans-serif" fill="#0e4da8">Stoolaskii in Action!</text>
-        </svg>
-      </figure>
+          <div class="control">
+            <label>
+              <span>Smoking status in exposed population</span>
+            </label>
+              <label for="smoking"></label><select id="smoking" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(20,35,63,0.2);">
+              <option value="no">Mostly non-smokers</option>
+              <option value="yes">Includes smokers</option>
+            </select>
+          </div>
+
+          <div class="risk-box" aria-live="polite">
+            <h3>Estimated relative concern</h3>
+            <p style="margin: 0 0 6px;">
+              Category: <span id="risk-level" class="risk-level risk-moderate">Moderate</span>
+            </p>
+            <p id="risk-text" style="margin:0;color:var(--muted);">
+              Near the EPA action threshold. Confirm with short-term and long-term testing.
+            </p>
+          </div>
+        </aside>
+      </div>
     </section>
 
-    <section class="events">
-      <h2>Fictional Event Schedule</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Event</th>
-            <th>Location</th>
-            <th>Weather Summary</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Jan 12, 2026</td>
-            <td>Polar Peak Stoolaskii Classic</td>
-            <td>Frostvine Ridge, Colorado</td>
-            <td>Light snowfall, -6°C, fast powder with bright afternoon sun.</td>
-          </tr>
-          <tr>
-            <td>Feb 23, 2026</td>
-            <td>Midnight Stool Glide Invitational</td>
-            <td>Moontrail Basin, Montana</td>
-            <td>Clear skies, -11°C, icy opening run warming to crisp, dry snow.</td>
-          </tr>
-          <tr>
-            <td>Mar 15, 2026</td>
-            <td>Alpine Barstool Grand Descent</td>
-            <td>Silver Summit, Utah</td>
-            <td>Partly cloudy, 1°C, spring slush in the lower section and gusty ridge winds.</td>
-          </tr>
-        </tbody>
-      </table>
-      <footer>
-        Featured appearances: <span id="event-count">0</span> events
-      </footer>
+    <section id="weather">
+      <h2>How Weather and Seasons Affect Radon</h2>
+      <p class="section-lead">
+        Radon levels can vary day-to-day and season-to-season. Cold weather, tight building operation, wind effects,
+        and pressure differences between indoors and soil can change how much radon is pulled into occupied spaces.
+      </p>
+
+      <div class="columns">
+        <article class="card mitigation-card">
+          <h3>Common Seasonal Patterns</h3>
+          <ul>
+            <li><strong>Winter:</strong> Closed windows and stronger stack effect often increase indoor radon.</li>
+            <li><strong>Summer:</strong> Open windows may dilute radon in some homes, but air conditioning patterns can vary results.</li>
+            <li><strong>Rain and snow cover:</strong> Temporary sealing of soil surface can redirect soil gas toward foundations.</li>
+            <li><strong>Wind events:</strong> Wind pressure around buildings can raise or lower entry rates depending on structure.</li>
+            <li><strong>Rapid pressure changes:</strong> Barometric shifts can produce short-term radon spikes.</li>
+          </ul>
+        </article>
+
+        <article class="card mitigation-card">
+          <h3>Testing and Operations Implications</h3>
+          <ul>
+            <li><strong>Use both short- and long-term tests:</strong> Long-term testing better captures seasonal variability.</li>
+            <li><strong>Test in lowest occupied level:</strong> Basements and slab-on-grade levels are commonly most informative.</li>
+            <li><strong>Retest after envelope/HVAC changes:</strong> New insulation, sealing, or airflow balancing can shift radon behavior.</li>
+            <li><strong>Commercial schedules matter:</strong> Night setback and weekend ventilation changes can influence trends.</li>
+            <li><strong>Track conditions:</strong> Log weather and HVAC mode when reviewing radon measurements.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="table-wrap" style="margin-top: 14px;">
+        <table aria-label="Weather and seasonal influence on indoor radon">
+          <thead>
+            <tr>
+              <th>Condition</th>
+              <th>Typical Indoor Effect</th>
+              <th>Planning Response</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cold outdoor temperatures</td>
+              <td>Often increases indoor concentration due to stack effect and reduced window opening.</td>
+              <td>Prioritize winter testing and verify mitigation fan operation.</td>
+            </tr>
+            <tr>
+              <td>Heavy rain / wet soil</td>
+              <td>Can transiently increase soil-gas pressure pathways into structures.</td>
+              <td>Review short-term spikes with weather logs before final interpretation.</td>
+            </tr>
+            <tr>
+              <td>High wind periods</td>
+              <td>Can create pressure-driven variability across building zones.</td>
+              <td>For large buildings, evaluate zone-by-zone pressure and monitoring points.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
+
+    <section id="mitigation">
+      <h2>Mitigation Techniques</h2>
+      <p class="section-lead">
+        Mitigation depends on building type, foundation design, occupancy profile, and measured concentration. The
+        methods below are commonly used in U.S. practice.
+      </p>
+
+      <div class="columns">
+        <article class="card mitigation-card">
+          <h3>Homes (Residential)</h3>
+          <ul>
+            <li><strong>Active sub-slab depressurization (ASD):</strong> Fan and pipe system draws soil gas from beneath slab and vents above roofline.</li>
+            <li><strong>Sealing entry points:</strong> Seal cracks/joints to support ASD performance, not as a standalone fix.</li>
+            <li><strong>Crawlspace depressurization or membrane systems:</strong> Common for homes with crawlspaces.</li>
+            <li><strong>Post-mitigation testing:</strong> Verify levels after installation and re-test periodically.</li>
+            <li><strong>Radon-resistant new construction:</strong> Gas-permeable layer, plastic sheeting, vent pipe, and fan-ready electrical setup.</li>
+          </ul>
+        </article>
+
+        <article class="card mitigation-card">
+          <h3>Commercial and Large Buildings</h3>
+          <ul>
+            <li><strong>Diagnostic mapping:</strong> Identify pressure zones and slab communication across larger footprints.</li>
+            <li><strong>Multi-point depressurization:</strong> Multiple suction points, larger fans, and zoned monitoring.</li>
+            <li><strong>HVAC pressure balancing:</strong> Reduce negative pressure that can pull radon indoors.</li>
+            <li><strong>Continuous monitoring:</strong> Trending and alarms for facilities with high occupancy.</li>
+            <li><strong>Operations integration:</strong> Include radon controls in facility management and preventive maintenance plans.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="table-wrap" style="margin-top: 14px;">
+        <table aria-label="Typical radon response planning by level">
+          <thead>
+            <tr>
+              <th>Measured Level</th>
+              <th>Typical Response</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>&lt; 2.0 pCi/L</td>
+              <td>Maintain awareness, retest based on EPA guidance and after major renovations.</td>
+              <td>Risk is not zero; maintain ventilation and good building maintenance.</td>
+            </tr>
+            <tr>
+              <td>2.0 - 3.9 pCi/L</td>
+              <td>Consider mitigation, especially with vulnerable occupants or high occupancy time.</td>
+              <td>EPA notes there is no known safe radon level.</td>
+            </tr>
+            <tr>
+              <td>&gt;= 4.0 pCi/L</td>
+              <td>Plan and implement mitigation promptly with qualified professionals.</td>
+              <td>EPA action level; verify effectiveness with follow-up tests.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="epa">
+      <h2>EPA and U.S. Guidance Links</h2>
+      <div class="card" style="padding:16px;">
+        <ul style="margin:0;padding-left:18px;line-height:1.6;">
+          <li><a href="https://www.epa.gov/radon" target="_blank" rel="noopener noreferrer">EPA Radon Main Page</a></li>
+          <li><a href="https://www.epa.gov/radon/find-information-about-local-radon-zones-and-state-contact-information" target="_blank" rel="noopener noreferrer">EPA Radon Zones and State Contacts</a></li>
+          <li><a href="https://www.epa.gov/radon/citizens-guide-radon-guide-protecting-yourself-and-your-family-radon" target="_blank" rel="noopener noreferrer">A Citizen's Guide to Radon (EPA)</a></li>
+          <li><a href="https://www.epa.gov/radon/health-risk-radon" target="_blank" rel="noopener noreferrer">EPA Health Risk of Radon</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <p class="footer">
+      This educational page is for awareness and planning support, not medical advice. For diagnostics and mitigation,
+      consult certified radon measurement and mitigation professionals and follow state/local requirements.
+    </p>
   </main>
 
   <script>
-    const events = document.querySelectorAll("tbody tr").length;
-    document.getElementById("event-count").textContent = events;
+    (function () {
+      const canvas = document.getElementById('radon-canvas');
+      const ctx = canvas.getContext('2d');
+
+      const soilRate = document.getElementById('soil-rate');
+      const ventilation = document.getElementById('ventilation');
+      const measuredRadon = document.getElementById('measured-radon');
+      const occupancy = document.getElementById('occupancy');
+      const smoking = document.getElementById('smoking');
+
+      const soilRateValue = document.getElementById('soil-rate-value');
+      const ventValue = document.getElementById('vent-value');
+      const radonValue = document.getElementById('radon-value');
+      const occupancyValue = document.getElementById('occupancy-value');
+
+      const riskLevel = document.getElementById('risk-level');
+      const riskText = document.getElementById('risk-text');
+
+      const radonParticles = [];
+      const daughters = [];
+      const alphaBursts = [];
+
+      function resizeCanvas() {
+        const ratio = window.devicePixelRatio || 1;
+        const displayWidth = canvas.clientWidth;
+        const displayHeight = canvas.clientHeight;
+        canvas.width = Math.floor(displayWidth * ratio);
+        canvas.height = Math.floor(displayHeight * ratio);
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
+
+      function pushParticles() {
+        const entry = Number(soilRate.value);
+        const vent = Number(ventilation.value);
+        const spawnCount = Math.max(1, Math.round((entry / 18) * (1 - vent / 120)));
+
+        for (let i = 0; i < spawnCount; i += 1) {
+          radonParticles.push({
+            x: 30 + Math.random() * (canvas.clientWidth - 60),
+            y: canvas.clientHeight * 0.84 + Math.random() * 36,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: -0.45 - Math.random() * 0.55,
+            life: 90 + Math.random() * 70
+          });
+        }
+      }
+
+      function drawBuilding() {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        ctx.fillRect(w * 0.16, h * 0.22, w * 0.68, h * 0.34);
+
+        ctx.fillStyle = '#93c5fd';
+        ctx.fillRect(w * 0.16, h * 0.56, w * 0.68, h * 0.08);
+
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(w * 0.2, h * 0.2, w * 0.6, h * 0.03);
+
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(w * 0.38, h * 0.64);
+        ctx.lineTo(w * 0.38, h * 0.74);
+        ctx.lineTo(w * 0.62, h * 0.74);
+        ctx.lineTo(w * 0.62, h * 0.64);
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(120,53,15,0.48)';
+        ctx.fillRect(0, h * 0.66, w, h * 0.34);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.beginPath();
+        ctx.moveTo(w * 0.3, h * 0.64);
+        ctx.lineTo(w * 0.3, h * 0.58);
+        ctx.lineTo(w * 0.32, h * 0.58);
+        ctx.lineTo(w * 0.32, h * 0.64);
+        ctx.stroke();
+      }
+
+      function updateParticles() {
+        const h = canvas.clientHeight;
+        const w = canvas.clientWidth;
+        const decayProbability = 0.012 + Number(measuredRadon.value) / 3000;
+
+        for (let i = radonParticles.length - 1; i >= 0; i -= 1) {
+          const p = radonParticles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 1;
+
+          if (Math.random() < decayProbability && p.y < h * 0.58) {
+            daughters.push({ x: p.x, y: p.y, ttl: 52 + Math.random() * 35 });
+            alphaBursts.push({ x: p.x, y: p.y, r: 1, ttl: 18 });
+            radonParticles.splice(i, 1);
+            continue;
+          }
+
+          if (p.life <= 0 || p.y < h * 0.18 || p.x < 0 || p.x > w) {
+            radonParticles.splice(i, 1);
+          }
+        }
+
+        for (let i = daughters.length - 1; i >= 0; i -= 1) {
+          daughters[i].ttl -= 1;
+          daughters[i].y -= 0.12;
+          if (daughters[i].ttl <= 0) {
+            daughters.splice(i, 1);
+          }
+        }
+
+        for (let i = alphaBursts.length - 1; i >= 0; i -= 1) {
+          alphaBursts[i].ttl -= 1;
+          alphaBursts[i].r += 0.9;
+          if (alphaBursts[i].ttl <= 0) {
+            alphaBursts.splice(i, 1);
+          }
+        }
+      }
+
+      function drawParticles() {
+        for (const p of radonParticles) {
+          ctx.fillStyle = 'rgba(29,78,216,0.78)';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2.6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        for (const d of daughters) {
+          ctx.fillStyle = 'rgba(147,51,234,0.65)';
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, 2.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        for (const a of alphaBursts) {
+          ctx.strokeStyle = 'rgba(245,158,11,' + a.ttl / 18 + ')';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+        drawBuilding();
+        pushParticles();
+        updateParticles();
+        drawParticles();
+        window.requestAnimationFrame(animate);
+      }
+
+      function updateReadouts() {
+        soilRateValue.textContent = soilRate.value;
+        ventValue.textContent = ventilation.value + '%';
+        radonValue.textContent = measuredRadon.value;
+        occupancyValue.textContent = occupancy.value;
+      }
+
+      function updateRiskAssessment() {
+        const radon = Number(measuredRadon.value);
+        const hours = Number(occupancy.value);
+        const smokerFactor = smoking.value === 'yes' ? 1.35 : 1;
+
+        const score = radon * (hours / 16) * smokerFactor;
+
+        riskLevel.classList.remove('risk-low', 'risk-moderate', 'risk-high');
+
+        if (score < 2.5) {
+          riskLevel.textContent = 'Lower';
+          riskLevel.classList.add('risk-low');
+          riskText.textContent =
+            'Below common action thresholds, but keep routine testing on your maintenance calendar.';
+        } else if (score < 5) {
+          riskLevel.textContent = 'Moderate';
+          riskLevel.classList.add('risk-moderate');
+          riskText.textContent =
+            'Near or above levels where many U.S. building managers begin planning mitigation and follow-up testing.';
+        } else {
+          riskLevel.textContent = 'High';
+          riskLevel.classList.add('risk-high');
+          riskText.textContent =
+            'At a level where prompt professional mitigation and verification testing are strongly warranted.';
+        }
+      }
+
+      function onControlChange() {
+        updateReadouts();
+        updateRiskAssessment();
+      }
+
+      [soilRate, ventilation, measuredRadon, occupancy, smoking].forEach(function (el) {
+        el.addEventListener('input', onControlChange);
+        el.addEventListener('change', onControlChange);
+      });
+
+      window.addEventListener('resize', resizeCanvas);
+
+      resizeCanvas();
+      onControlChange();
+      animate();
+    })();
   </script>
 </body>
 </html>
+
+
+
